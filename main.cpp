@@ -1,9 +1,16 @@
 #include <iostream>
 #include <conio.h>
+#include <fstream>
 
-void readKey() {
+
+std::string readKey() {
 	int key = _getch();
+	
 
+	// handle the space for the exit
+	if (key == 27) {
+		return "ESC";
+	}
 
 	// special keys 
 	if (key == 0 || key == 224) {
@@ -11,36 +18,57 @@ void readKey() {
 
 		switch (specialKey) {
 		case 72: 
-			std::cout << "[up]" << '\n'; 
+			return "[up]"; 
 			break;
 		case 80: 
-			std::cout << "[DOWN]" << '\n'; 
+			return "[DOWN]"; 
 			break;
 		case 75: 
-			std::cout << "[LEFT]" << '\n';
+			return "[LEFT]";
 			break;
 		case 77:
-			std::cout << "[RIGHT]" << '\n';
+			return "[RIGHT]";
 			break;
 		// need to add cases for F keys for more clarity later 
+		
 		default:
-			std::cout << " SP: [" << specialKey << '] ' << '\n';
+			return "[unspecified in code]";
 			break;
 		}
 	}
-	else {
-		_putch(key); // used to show each output without buffering 
-	}
+	
+
+	return std::string(1, char(key)); // creates a string of 1 and converts the ascii to char 	
 
 
 }
 
-int main() {
-	
-	bool running = true;
+void writeFile(std::ofstream& file, std::string& key) {
+	if (file.is_open()) {
+		file << key;
+		file.flush();
+	}
+	else {
+		std::cout << "file could not open. " << '\n';
+	}
 
-	while (running) {
-		readKey();
+}
+
+int main() {
+
+	std::ofstream logFile("file.txt");
+
+	while (true) {
+		std::string key = readKey();
+		
+		if (key == "ESC") { // end program 
+			break;
+		}
+		
+		
+		writeFile(logFile, key);
+
+		std::cout << "logged" << key << '\n';
 	}
 
 	
